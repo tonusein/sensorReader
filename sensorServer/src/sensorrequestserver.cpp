@@ -1,6 +1,7 @@
 #include "sensorrequestserver.h"
 #include "sensordataconverter.h"
 
+
 using namespace std;
 
 
@@ -37,11 +38,15 @@ std::vector<char> SensorRequestServer::handleUdpReceive(std::vector<char> rawDat
     default:
         return std::vector<char>();
     }
+
     int dataType = m_sensors.get()->getInitType(sensorNr);
 
     auto tempVal = SensorDataConverter::sensorValue2RawData(dataType, sensorValue);
 
-    vector<char> out( reinterpret_cast<char*>(&tempVal)[0],
-            reinterpret_cast<char*>(&tempVal)[sizeof(uint64_t)]);
-    return out;
+    std::vector<char> sendData ( sizeof(uint64_t) + 2);
+    sendData[0] = static_cast<char>(sensorNr);
+    sendData[1] = static_cast<char>(dataType);
+    memcpy(&sendData.data()[2], reinterpret_cast<char*>(&tempVal), sizeof(uint64_t));
+
+    return sendData;
 }

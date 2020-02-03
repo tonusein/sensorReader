@@ -22,6 +22,7 @@ void UdpServer::start(function<void(vector<char>)> callback)
    //start io Service on other thread
    m_runThread = thread(boost::bind(&boost::asio::io_service::run, boost::ref(m_ioService)));
    m_running = true;
+   m_withReply = false;
 
 }
 
@@ -35,6 +36,7 @@ void UdpServer::startaWithReply(std::function<std::vector<char> (std::vector<cha
     //start io Service on other thread
     m_runThread = thread(boost::bind(&boost::asio::io_service::run, boost::ref(m_ioService)));
     m_running = true;
+    m_withReply = true;
 }
 
 void UdpServer::handleReceive(const boost::system::error_code &error,
